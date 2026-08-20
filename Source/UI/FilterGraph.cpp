@@ -40,7 +40,7 @@ void FilterGraph::paint (juce::Graphics& g)
     for (auto frequency : frequencyValues)
     {
         auto x = frequencyToX (frequency);
-        g.drawHorizontalLine (
+        g.drawVerticalLine (
             juce::roundToInt (x),
             (float) graph.getY(),
             (float) graph.getBottom());
@@ -79,7 +79,7 @@ void FilterGraph::paint (juce::Graphics& g)
     for (auto decibels : decibelValues)
     {
         auto y = decibelsToY (decibels);
-        g.drawVerticalLine (
+        g.drawHorizontalLine (
             juce::roundToInt (y),
             (float) graph.getX(),
             (float) graph.getRight());
