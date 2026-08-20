@@ -51,7 +51,7 @@ LPfilterAudioProcessorEditor::~LPfilterAudioProcessorEditor()
 //==============================================================================
 void LPfilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::black);
+    g.fillAll (juce::Colours::white);
 
 }
 

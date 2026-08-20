@@ -20,6 +20,7 @@ private:
     LPfilterAudioProcessor& processorRef;
     juce::Slider gainSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+    FilterGraph filterGraph;
 
     juce::Slider cutoffSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> cutoffAttachment;
