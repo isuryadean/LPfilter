@@ -1,0 +1,33 @@
+name: Build Windows Standalone
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-windows-standalone:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build Standalone
+        run: cmake --build build --config Release --parallel
+
+      - name: Find Standalone output
+        shell: bash
+        run: find build -iname "LPfilter.exe" -type f
+
+      - name: Upload Standalone artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LPfilter-Standalone-Windows
+          path: build/**/Release/Standalone/LPfilter.exe
