@@ -7,8 +7,6 @@ FilterGraph::FilterGraph (LPfilterAudioProcessor& p): processorRef (p)
 
 void FilterGraph::paint (juce::Graphics& g)
 {
-    juce::Path spectrumPath;
-
     auto graph = getLocalBounds().reduced (30,20);
 
     g.setColour (juce::Colours::grey);
@@ -142,26 +140,33 @@ void FilterGraph::paint (juce::Graphics& g)
         juce::PathStrokeType (2.0f));
 
     //FFT spectrum analyser
-    for (int i = 1; i < fftSize / 2; ++i)
-    {
-        auto magnitude = spectrum[i];
+    auto& spectrum = processorRef.getSpectrum();
 
+    juce::Path spectrumPath;
+
+    for (int i = 1; i < LPfilterAudioProcessor::fftSize / 2; ++i)
+    {
         auto frequency =
             static_cast<float> (i)
-            * processorRef.getSampleRate()
-            / static_cast<float> (fftSize);
+            * static_cast<float> (processorRef.getSampleRate())
+            / static_cast<float> (LPfilterAudioProcessor::fftSize);
 
         if (frequency < minFreq || frequency > maxFreq)
             continue;
 
+        auto magnitude = spectrum[i];
+
         auto magnitudeDb =
             juce::Decibels::gainToDecibels (
-                magnitude / static_cast<float> (fftSize));
+                magnitude / static_cast<float> (LPfilterAudioProcessor::fftSize));
+
+        // Keep the spectrum inside our graph
+        magnitudeDb = juce::jlimit (minDb, maxDb, magnitudeDb);
 
         auto x = frequencyToX (frequency);
         auto y = decibelsToY (magnitudeDb);
 
-        if (i == 1)
+        if (spectrumPath.isEmpty())
             spectrumPath.startNewSubPath (x, y);
         else
             spectrumPath.lineTo (x, y);
@@ -169,8 +174,10 @@ void FilterGraph::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::darkgrey);
 
-    g.strokePath (spectrumPath,juce::PathStrokeType (1.5f));
-}
+    g.strokePath (
+        spectrumPath,
+        juce::PathStrokeType (1.5f));
+    }
 
 void FilterGraph::resized()
 {
