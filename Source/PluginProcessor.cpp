@@ -110,7 +110,7 @@ void LPfilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     this->sampleRate = sampleRate;
     fftIndex = 0;
     fftData.fill (0.0f);
-    spectrum.fill (0.0f)
+    spectrum.fill (0.0f);
 }
 
 void LPfilterAudioProcessor::releaseResources()
