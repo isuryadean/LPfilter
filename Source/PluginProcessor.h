@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <array>
 
 //==============================================================================
 class LPfilterAudioProcessor final : public juce::AudioProcessor
@@ -49,4 +50,18 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LPfilterAudioProcessor)
     float previousSample[2] = { 0.0f, 0.0f };
     double sampleRate = 44100.0;
+    double getSampleRate() const { return sampleRate; }
+
+    //FFT stuff
+    static constexpr int fftOrder = 11;
+    static constexpr int fftSize = 1 << fftOrder;
+    juce::dsp::FFT fft { fftOrder };
+    std::array<float, fftSize * 2> fftData {};
+    int fftIndex = 0;
+    std::array<float, fftSize / 2> spectrum {};
+
+    const std::array<float, fftSize / 2>& getSpectrum() const
+    {
+        return spectrum;
+    }
 };

@@ -2,10 +2,12 @@
 
 FilterGraph::FilterGraph (LPfilterAudioProcessor& p): processorRef (p)
 {
+    startTimerHz (30);
 }
 
 void FilterGraph::paint (juce::Graphics& g)
 {
+    juce::Path spectrumPath;
 
     auto graph = getLocalBounds().reduced (30,20);
 
@@ -37,6 +39,15 @@ void FilterGraph::paint (juce::Graphics& g)
              + normalised * graph.getWidth();
     };
 
+    //change boring freqiuency to K and kHz
+    auto frequencyToString = [] (float frequency)
+    {
+        if (frequency >= 1000.0f)
+            return juce::String (frequency / 1000.0f, 0) + " kHz";
+
+        return juce::String (frequency, 0) + " Hz";
+    };
+
     for (auto frequency : frequencyValues)
     {
         auto x = frequencyToX (frequency);
@@ -45,7 +56,7 @@ void FilterGraph::paint (juce::Graphics& g)
             (float) graph.getY(),
             (float) graph.getBottom());
         g.drawText (
-            juce::String(frequency),
+            frequencyToString(frequency),
             juce::roundToInt (x) - 15,
             graph.getBottom() - 20,
             30,
@@ -96,7 +107,7 @@ void FilterGraph::paint (juce::Graphics& g)
     auto cutoff = processorRef.parameters.getRawParameterValue ("cutoff")->load();
     const int numPoints = 200;
     juce::Path filterCurve;
-    const float sampleRate = 44100.0f;
+    const float sampleRate = static_cast<float> (processorRef.getSampleRate());
     auto alpha = 1.0f - std::exp (
             -2.0f * juce::MathConstants<float>::pi * cutoff / sampleRate);
     for (int i = 0; i < numPoints; ++i)
@@ -129,8 +140,43 @@ void FilterGraph::paint (juce::Graphics& g)
     g.strokePath (
         filterCurve,
         juce::PathStrokeType (2.0f));
+
+    //FFT spectrum analyser
+    for (int i = 1; i < fftSize / 2; ++i)
+    {
+        auto magnitude = spectrum[i];
+
+        auto frequency =
+            static_cast<float> (i)
+            * processorRef.getSampleRate()
+            / static_cast<float> (fftSize);
+
+        if (frequency < minFreq || frequency > maxFreq)
+            continue;
+
+        auto magnitudeDb =
+            juce::Decibels::gainToDecibels (
+                magnitude / static_cast<float> (fftSize));
+
+        auto x = frequencyToX (frequency);
+        auto y = decibelsToY (magnitudeDb);
+
+        if (i == 1)
+            spectrumPath.startNewSubPath (x, y);
+        else
+            spectrumPath.lineTo (x, y);
+    }
+
+    g.setColour (juce::Colours::darkgrey);
+
+    g.strokePath (spectrumPath,juce::PathStrokeType (1.5f));
 }
 
 void FilterGraph::resized()
 {
+}
+
+void FilterGraph::timerCallback()
+{
+    repaint();
 }

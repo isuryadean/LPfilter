@@ -165,6 +165,27 @@ void LPfilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+
+    //Collect Samples for FFT spectrum analyser UI
+
+    auto* inputData = buffer.getReadPointer (0);
+
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+    {
+        fftData[fftIndex++] = inputData[sample];
+
+        if (fftIndex == fftSize)
+        {
+            fft.performFrequencyOnlyForwardTransform (fftData.data());
+            for (int i = 0; i < fftSize / 2; ++i)
+            {
+                spectrum[i] = fftData[i];
+            }
+            fftIndex = 0;
+        }
+    }
+
+    //Filter and Gain processing
     auto cutoff = parameters.getRawParameterValue("cutoff")->load();
     auto alpha = 1.0f - std::exp(-2.0f * juce::MathConstants<float>::pi * cutoff / sampleRate);
     auto gain = parameters.getRawParameterValue("gain")->load();
@@ -180,6 +201,8 @@ void LPfilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             channelData[sample] = output * gain;
         }
     }
+
+
 }
 
 //==============================================================================
