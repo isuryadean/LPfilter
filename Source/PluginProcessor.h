@@ -3,12 +3,12 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 //==============================================================================
-class FirstVSTAudioProcessor final : public juce::AudioProcessor
+class LPfilterAudioProcessor final : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    FirstVSTAudioProcessor();
-    ~FirstVSTAudioProcessor() override;
+    LPfilterAudioProcessor();
+    ~LPfilterAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -46,5 +46,7 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FirstVSTAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LPfilterAudioProcessor)
+    float previousSample[2] = { 0.0f, 0.0f };
+    double sampleRate = 44100.0;
 };

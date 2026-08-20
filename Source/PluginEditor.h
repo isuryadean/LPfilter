@@ -3,11 +3,11 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-class FirstVSTAudioProcessorEditor final : public juce::AudioProcessorEditor
+class LPfilterAudioProcessorEditor final : public juce::AudioProcessorEditor
 {
 public:
-    explicit FirstVSTAudioProcessorEditor (FirstVSTAudioProcessor&);
-    ~FirstVSTAudioProcessorEditor() override;
+    explicit LPfilterAudioProcessorEditor (LPfilterAudioProcessor&);
+    ~LPfilterAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -16,9 +16,12 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    FirstVSTAudioProcessor& processorRef;
+    LPfilterAudioProcessor& processorRef;
     juce::Slider gainSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FirstVSTAudioProcessorEditor)
+    juce::Slider cutoffSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::CutoffAttachment> cutoffAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LPfilterAudioProcessorEditor)
 };

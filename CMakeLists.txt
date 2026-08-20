@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(firstVST VERSION 0.0.1)
+project(LPfilter VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(JUCE)
 
-juce_add_plugin(firstVST
+juce_add_plugin(LPfilter
     COMPANY_NAME "Iemanie"
 
     IS_SYNTH FALSE
@@ -22,19 +22,19 @@ juce_add_plugin(firstVST
     FORMATS VST3 Standalone
     COPY_PLUGIN_AFTER_BUILD TRUE
 
-    PRODUCT_NAME "firstVST"
+    PRODUCT_NAME "LPfilter"
 
     NEEDS_WEB_BROWSER FALSE
     NEEDS_CURL FALSE
 )
 
-target_sources(firstVST
+target_sources(LPfilter
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
 )
 
-target_compile_definitions(firstVST
+target_compile_definitions(LPfilter
     PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
@@ -42,7 +42,7 @@ target_compile_definitions(firstVST
         JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
 )
 
-target_link_libraries(firstVST
+target_link_libraries(LPfilter
     PRIVATE
         juce::juce_audio_utils
     PUBLIC

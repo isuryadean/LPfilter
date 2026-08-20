@@ -2,7 +2,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-FirstVSTAudioProcessor::FirstVSTAudioProcessor()
+LPfilterAudioProcessor::LPfilterAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
@@ -21,22 +21,29 @@ FirstVSTAudioProcessor::FirstVSTAudioProcessor()
             "Gain", //name
             0.0f, //min value
             2.0f, //max value
-            1.0f) //default value
+            1.0f), //default value
+        
+        std::make_unique<juce::AudioParameterFloat>(
+            "cutoff",
+            "Cutoff",
+            20.0f,
+            20000.0f,
+            1000.0f)
     })
 {
 }
 
-FirstVSTAudioProcessor::~FirstVSTAudioProcessor()
+LPfilterAudioProcessor::~LPfilterAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String FirstVSTAudioProcessor::getName() const
+const juce::String LPfilterAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool FirstVSTAudioProcessor::acceptsMidi() const
+bool LPfilterAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -45,7 +52,7 @@ bool FirstVSTAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool FirstVSTAudioProcessor::producesMidi() const
+bool LPfilterAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -54,7 +61,7 @@ bool FirstVSTAudioProcessor::producesMidi() const
    #endif
 }
 
-bool FirstVSTAudioProcessor::isMidiEffect() const
+bool LPfilterAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -63,53 +70,54 @@ bool FirstVSTAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double FirstVSTAudioProcessor::getTailLengthSeconds() const
+double LPfilterAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int FirstVSTAudioProcessor::getNumPrograms()
+int LPfilterAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int FirstVSTAudioProcessor::getCurrentProgram()
+int LPfilterAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void FirstVSTAudioProcessor::setCurrentProgram (int index)
+void LPfilterAudioProcessor::setCurrentProgram (int index)
 {
     juce::ignoreUnused (index);
 }
 
-const juce::String FirstVSTAudioProcessor::getProgramName (int index)
+const juce::String LPfilterAudioProcessor::getProgramName (int index)
 {
     juce::ignoreUnused (index);
     return {};
 }
 
-void FirstVSTAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void LPfilterAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     juce::ignoreUnused (index, newName);
 }
 
 //==============================================================================
-void FirstVSTAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void LPfilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
+    this->sampleRate = sampleRate;
 }
 
-void FirstVSTAudioProcessor::releaseResources()
+void LPfilterAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
-bool FirstVSTAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool LPfilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -133,7 +141,7 @@ bool FirstVSTAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
   #endif
 }
 
-void FirstVSTAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+void LPfilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
@@ -157,31 +165,37 @@ void FirstVSTAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    auto gain = parameters.getRawParameterValue("gain");
-    const auto currentGain = gain->load();
+    auto cutoff = parameters.getRawParameterValue("cutoff")->load();
+    auto alpha = 1.0f - std::exp(-2.0f * juce::MathConstants<float>::pi * cutoff / sampleRate);
+    auto gain = parameters.getRawParameterValue("gain")->load();
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        auto* channelData = buffer.getWritePointer(channel);
+
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
-            channelData[sample] *= currentGain;
+            auto currentSample = channelData[sample];
+            output = previousSample[channel] * (1.0f - alpha) + currentSample * alpha;
+            channelData[sample] = output;
+            previousSample[channel] = output;
+            channelData[sample] = output * gain;
         }
     }
 }
 
 //==============================================================================
-bool FirstVSTAudioProcessor::hasEditor() const
+bool LPfilterAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* FirstVSTAudioProcessor::createEditor()
+juce::AudioProcessorEditor* LPfilterAudioProcessor::createEditor()
 {
-    return new FirstVSTAudioProcessorEditor (*this);
+    return new LPfilterAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void FirstVSTAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void LPfilterAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
@@ -189,7 +203,7 @@ void FirstVSTAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     juce::ignoreUnused (destData);
 }
 
-void FirstVSTAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void LPfilterAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -200,5 +214,5 @@ void FirstVSTAudioProcessor::setStateInformation (const void* data, int sizeInBy
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new FirstVSTAudioProcessor();
+    return new LPfilterAudioProcessor();
 }
