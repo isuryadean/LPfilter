@@ -175,8 +175,7 @@ void LPfilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
             auto currentSample = channelData[sample];
-            output = previousSample[channel] * (1.0f - alpha) + currentSample * alpha;
-            channelData[sample] = output;
+            float output = previousSample[channel] * (1.0f - alpha) + currentSample * alpha;
             previousSample[channel] = output;
             channelData[sample] = output * gain;
         }

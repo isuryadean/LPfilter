@@ -21,7 +21,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 
     juce::Slider cutoffSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::CutoffAttachment> cutoffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> cutoffAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LPfilterAudioProcessorEditor)
 };

@@ -33,7 +33,7 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
         20);
     cutoffSlider.setRange(20.0, 20000.0, 1.0);
     cutoffAttachment = std::make_unique<
-        juce::AudioProcessorValueTreeState::CutoffAttachment>(
+        juce::AudioProcessorValueTreeState::SliderAttachment>(
             processorRef.parameters,
             "cutoff",
             cutoffSlider);
