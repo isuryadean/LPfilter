@@ -41,6 +41,7 @@ target_compile_definitions(LPfilter
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+        juce::juce_dsp
 )
 
 target_link_libraries(LPfilter
