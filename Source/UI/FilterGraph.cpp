@@ -22,8 +22,7 @@ void FilterGraph::paint (juce::Graphics& g)
     auto frequencyToX = [graph, minFreq, maxFreq] (float frequency)
     {
         auto normalised =
-            std::log10 (frequency / minFreq)
-            / std::log10 (maxFreq / minFreq);
+            std::log10 (frequency / minFreq) / std::log10 (maxFreq / minFreq);
 
         return graph.getX()
              + normalised * graph.getWidth();
@@ -31,27 +30,27 @@ void FilterGraph::paint (juce::Graphics& g)
 
     // Temporary frequency markers
     g.drawVerticalLine (
-        frequencyToX (20.0f),
+        juce::roundToInt (frequencyToX (20.0f)),
         (float) graph.getY(),
         (float) graph.getBottom());
 
     g.drawVerticalLine (
-        frequencyToX (100.0f),
+        juce::roundToInt (frequencyToX (100.0f)),
         (float) graph.getY(),
         (float) graph.getBottom());
 
     g.drawVerticalLine (
-        frequencyToX (1000.0f),
+        juce::roundToInt (frequencyToX (1000.0f)),
         (float) graph.getY(),
         (float) graph.getBottom());
 
     g.drawVerticalLine (
-        frequencyToX (10000.0f),
+        juce::roundToInt (frequencyToX (10000.0f)),
         (float) graph.getY(),
         (float) graph.getBottom());
 
     g.drawVerticalLine (
-        frequencyToX (20000.0f),
+        juce::roundToInt (frequencyToX (20000.0f)),
         (float) graph.getY(),
         (float) graph.getBottom());
 }
