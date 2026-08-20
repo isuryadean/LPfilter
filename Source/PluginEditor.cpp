@@ -31,7 +31,6 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
         false,
         60,
         20);
-    cutoffSlider.setRange(20.0, 20000.0, 1.0);
     cutoffAttachment = std::make_unique<
         juce::AudioProcessorValueTreeState::SliderAttachment>(
             processorRef.parameters,
@@ -60,4 +59,5 @@ void LPfilterAudioProcessorEditor::paint (juce::Graphics& g)
 void LPfilterAudioProcessorEditor::resized()
 {
     gainSlider.setBounds(100, 50, 200, 200);
+    cutoffSlider.setBounds(250, 50, 100, 100);
 }
