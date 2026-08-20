@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "FilterGraph.h"
 
 //==============================================================================
 class LPfilterAudioProcessorEditor final : public juce::AudioProcessorEditor

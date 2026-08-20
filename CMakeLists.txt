@@ -32,6 +32,7 @@ target_sources(LPfilter
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
+        Source/UI/FilterGraph.cpp
 )
 
 target_compile_definitions(LPfilter

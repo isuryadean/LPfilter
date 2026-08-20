@@ -36,6 +36,9 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
             processorRef.parameters,
             "cutoff",
             cutoffSlider);
+    
+    //Graph
+    addAndMakeVisible(filterGraph);
         
 
     setSize (400, 300);
@@ -50,28 +53,11 @@ void LPfilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
 
-    g.setColour (juce::Colours::grey);
-
-    // Graph area
-    auto graph = getLocalBounds().reduced (20);
-
-    // Horizontal 0 dB line
-    g.drawHorizontalLine (
-        graph.getCentreY(),
-        graph.getX(),
-        graph.getRight()
-    );
-
-    // Vertical centre line
-    g.drawVerticalLine (
-        graph.getCentreX(),
-        graph.getY(),
-        graph.getBottom()
-    );
 }
 
 void LPfilterAudioProcessorEditor::resized()
 {
-    gainSlider.setBounds(100, 50, 200, 200);
-    cutoffSlider.setBounds(250, 50, 100, 100);
+    filterGraph.setBounds(20, 20, 360, 180);
+    gainSlider.setBounds(50, 220, 100, 60);
+    cutoffSlider.setBounds(250, 220, 100, 60);
 }
