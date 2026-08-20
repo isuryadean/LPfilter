@@ -1,14 +1,13 @@
 #include "FilterGraph.h"
 
-FilterGraph::FilterGraph()
+FilterGraph::FilterGraph (LPfilterAudioProcessor& p): processorRef (p)
 {
 }
 
 void FilterGraph::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::white);
 
-    auto graph = getLocalBounds().reduced (20);
+    auto graph = getLocalBounds().reduced (30,20);
 
     g.setColour (juce::Colours::grey);
 
@@ -92,6 +91,44 @@ void FilterGraph::paint (juce::Graphics& g)
             20,
             juce::Justification::centred);
     }
+
+    //Filter Curve
+    auto cutoff = processorRef.parameters.getRawParameterValue ("cutoff")->load();
+    const int numPoints = 200;
+    juce::Path filterCurve;
+    const float sampleRate = 44100.0f;
+    auto alpha = 1.0f - std::exp (
+            -2.0f * juce::MathConstants<float>::pi * cutoff / sampleRate);
+    for (int i = 0; i < numPoints; ++i)
+    {
+        auto normalised = static_cast<float> (i) / (numPoints - 1);
+        auto frequency = minFreq * std::pow (maxFreq / minFreq, normalised);
+
+        // We'll calculate the filter response here
+        auto omega =
+            2.0f * juce::MathConstants<float>::pi
+            * frequency
+            / sampleRate;
+
+        auto magnitude =
+            alpha /
+            std::sqrt (
+                1.0f
+                - 2.0f * (1.0f - alpha) * std::cos (omega)
+                + (1.0f - alpha) * (1.0f - alpha));
+
+        auto responseDb = 20.0f * std::log10 (magnitude);
+        auto x = frequencyToX (frequency);
+        auto y = decibelsToY (responseDb);
+        if (i == 0)
+            filterCurve.startNewSubPath (x, y);
+        else
+            filterCurve.lineTo (x, y);
+    }
+    g.setColour (juce::Colours::black);
+    g.strokePath (
+        filterCurve,
+        juce::PathStrokeType (2.0f));
 }
 
 void FilterGraph::resized()

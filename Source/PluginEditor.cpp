@@ -3,7 +3,9 @@
 
 //==============================================================================
 LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+    : AudioProcessorEditor (&p), 
+    processorRef (p),
+    filterGraph (p)
 {
     juce::ignoreUnused (processorRef);
     // Make sure that before the constructor has finished, you've set the
@@ -47,7 +49,7 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
     addAndMakeVisible(filterGraph);
         
 
-    setSize (600, 450);
+    setSize (700, 500);
 }
 
 LPfilterAudioProcessorEditor::~LPfilterAudioProcessorEditor()
@@ -63,7 +65,20 @@ void LPfilterAudioProcessorEditor::paint (juce::Graphics& g)
 
 void LPfilterAudioProcessorEditor::resized()
 {
-    filterGraph.setBounds (20, 20, 560, 280);
-    gainSlider.setBounds (100, 320, 120, 100);
-    cutoffSlider.setBounds (380, 320, 120, 100);
+    auto area = getLocalBounds().reduced (20);
+
+    // Graph
+    filterGraph.setBounds (
+        area.removeFromTop (320));
+
+    // Controls get whatever is left
+    auto controls = area;
+
+    gainSlider.setBounds (
+        controls.removeFromLeft (150)
+                .withSizeKeepingCentre (120, 120));
+
+    cutoffSlider.setBounds (
+        controls.removeFromRight (150)
+                .withSizeKeepingCentre (120, 120));
 }
