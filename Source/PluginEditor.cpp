@@ -48,12 +48,26 @@ LPfilterAudioProcessorEditor::~LPfilterAudioProcessorEditor()
 //==============================================================================
 void LPfilterAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colours::black);
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("This jawn loud", getLocalBounds(), juce::Justification::centred, 1);
+    g.setColour (juce::Colours::grey);
+
+    // Graph area
+    auto graph = getLocalBounds().reduced (20);
+
+    // Horizontal 0 dB line
+    g.drawHorizontalLine (
+        graph.getCentreY(),
+        graph.getX(),
+        graph.getRight()
+    );
+
+    // Vertical centre line
+    g.drawVerticalLine (
+        graph.getCentreX(),
+        graph.getY(),
+        graph.getBottom()
+    );
 }
 
 void LPfilterAudioProcessorEditor::resized()
