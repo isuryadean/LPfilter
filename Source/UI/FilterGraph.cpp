@@ -46,7 +46,7 @@ void FilterGraph::paint (juce::Graphics& g)
             (float) graph.getY(),
             (float) graph.getBottom());
         g.drawText (
-            juce::string(frequency),
+            juce::String(frequency),
             juce::roundToInt (x) - 15,
             graph.getBottom() - 20,
             30,
@@ -85,7 +85,7 @@ void FilterGraph::paint (juce::Graphics& g)
             (float) graph.getX(),
             (float) graph.getRight());
         g.drawText (
-            juce::string(decibels),
+            juce::String(decibels),
             graph.getX() - 40,
             juce::roundToInt (y) - 10,
             30,

@@ -18,7 +18,7 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
         60,
         20);
     gainSlider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::darkslategrey);
-    gainSlider.setColour (juce::Slider::textBoxTextColourId juce::Colours::white);
+    gainSlider.setColour (juce::Slider::textBoxTextColourId, juce::Colours::white);
     gainSlider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::black);
     gainAttachment = std::make_unique<
         juce::AudioProcessorValueTreeState::SliderAttachment>(
@@ -35,7 +35,7 @@ LPfilterAudioProcessorEditor::LPfilterAudioProcessorEditor (LPfilterAudioProcess
         60,
         20);
     cutoffSlider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::darkslategrey);
-    cutoffSlider.setColour (juce::Slider::textBoxTextColourId juce::Colours::white);
+    cutoffSlider.setColour (juce::Slider::textBoxTextColourId, juce::Colours::white);
     cutoffSlider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::black);
     cutoffAttachment = std::make_unique<
         juce::AudioProcessorValueTreeState::SliderAttachment>(
