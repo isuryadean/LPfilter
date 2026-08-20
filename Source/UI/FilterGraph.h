@@ -1,7 +1,6 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <JuceHeader.h>
 #include "../PluginProcessor.h"
 
 class FilterGraph : public juce::Component
